@@ -5,10 +5,21 @@ import './index.css';
 
 function App() {
   const [searchTerm, setSearchTerm] = useState('')
+  const [searchResult, setSearchResult] = useState([])
   const handleSubmit = async (e) => {
+    
+    setSearchResult([]);
     const config = { params: { q: searchTerm } };
      const response = await axios.get(`https://api.tvmaze.com/search/shows?`, config);
      console.log(response.data)
+    const results = response.data.map((res) => ({
+      title: res.show.name,
+      img : res.show.image?.medium,
+      type: res.show.type,
+      genre: res.show.genres.join(', '),
+      summary: res.show.summary,
+    }))
+    setSearchResult(results)
     setSearchTerm('')
   }
 
@@ -30,7 +41,16 @@ function App() {
     Search
   </button>
     </div>
-    <Search/>
+      {searchResult.map((result, index) =>(
+        <Search
+        key={index}
+        title={result.title}
+        image={result.img}
+        type={result.type}
+        genre={result.genre}
+        summary={result.summary}
+        />
+      ))}
     </div>
   );
 }
